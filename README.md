@@ -1,79 +1,78 @@
 # Archon AK74 for Mac
 
-If you enjoy AK74 for Mac, a coffee keeps it going ☕<br>
-앱이 도움이 되셨다면 커피 한 잔으로 응원해 주세요 ☕
+**English** | [한국어](README.ko.md)
+
+Unofficial macOS app for the Archon AK74 keyboard (SONiX, `0c45:800a`): lighting, screen GIF upload, and clock sync.
+The official driver is Windows-only, so this app was rebuilt for Mac by analyzing how the Windows driver talks to the keyboard.
+
+If you enjoy AK74 for Mac, a coffee keeps it going ☕
 
 <a href="https://buymeacoffee.com/ludin"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="45"></a>
 
-Archon AK74 키보드(`0c45:800a`)를 맥에서 설정하는 비공식 앱입니다.
-공식 드라이버는 Windows 전용이라, Windows 드라이버의 통신 방식을 분석해서 맥용으로 다시 만들었습니다.
+> **For the AK74 only, not the AK74 PRO.** The PRO model has a different USB ID.
 
-Unofficial macOS app for the Archon AK74 keyboard (SONiX, `0c45:800a`): lighting, screen GIF upload, and clock sync.
+## Features
 
-> **AK74 PRO가 아닌 AK74 전용입니다.** PRO 모델은 USB ID가 다릅니다.
+- **Lighting**: mode, color, rainbow, brightness, speed, direction
+- **Screen**: upload GIF, PNG, or JPG (240×135, up to 141 frames), playback speed 0.25x–4x
+- **Clock**: sync the current time and switch to the clock screen
+- **Languages**: English, 한국어, 日本語, 中文, Español (pick from the top right of the app)
 
-## 기능
+## Install
 
-- **조명**: 모드, 색상, 무지개색, 밝기, 속도, 방향
-- **화면**: GIF, PNG, JPG 업로드 (240×135, 최대 141프레임), 재생 속도 0.25~4배
-- **시계**: 현재 시간 동기화 + 시계 화면으로 전환
-- **언어**: English, 한국어, 日本語, 中文, Español (앱 오른쪽 위에서 선택)
+1. Download `Archon.AK74.Mac.dmg` from [Releases](../../releases).
+2. Open the DMG and drag the app into your Applications folder.
+3. The first time, open it with **right-click → Open**. macOS shows a warning because the app has no developer signature.
 
-## 설치
+Tested on Apple Silicon Macs. The keyboard must be connected with a USB cable. 2.4G wireless and Bluetooth are not supported.
 
-1. [Releases](../../releases)에서 `Archon.AK74.Mac.dmg`를 받습니다.
-2. DMG를 열고 앱을 Applications 폴더로 드래그합니다.
-3. 처음 실행할 때 **우클릭 → 열기**로 실행합니다. 정식 개발자 서명이 없어서 경고가 뜹니다.
+## Known limitations
 
-Apple Silicon 맥에서 확인했습니다. 키보드는 USB 케이블로 연결해야 합니다. 2.4G 무선과 블루투스는 지원하지 않습니다.
+- Only lighting modes 0 (off) and 1 (static color) are confirmed. Modes 2–17 show as "Effect N".
+- Which way directions 1–4 actually go hasn't been checked.
+- The keyboard has no command to switch straight between the clock and the GIF, so **Show GIF** re-uploads the last GIF you sent.
+- The keyboard draws at most about 20 frames per second (about 50 ms per frame). Faster speeds are matched by skipping frames. The longest frame time is 510 ms. Changing the speed requires re-uploading the GIF.
 
-## 알려진 제한
-
-- 조명 모드는 0번(끄기)과 1번(고정 색)만 확인했습니다. 2~17번은 "효과 N"으로 표시됩니다.
-- 방향 1~4가 실제로 어느 방향인지는 확인하지 않았습니다.
-- 키보드에는 시계와 GIF를 바로 바꾸는 명령이 없습니다. 그래서 **GIF 보기**를 누르면 마지막으로 올린 GIF를 다시 업로드합니다.
-- 키보드는 초당 최대 약 20프레임(프레임당 약 50ms)까지만 그립니다. 그보다 빠른 속도는 프레임을 건너뛰어서 맞춥니다. 프레임당 최대 시간은 510ms입니다. 속도를 바꾸려면 GIF를 다시 업로드해야 합니다.
-
-## 직접 빌드
+## Build from source
 
 ```sh
 ./build-dmg.sh   # → dist/Archon AK74 (Mac).dmg
 ```
 
-개발 중 실행: `npm install` 후 Electron 33으로 이 폴더를 실행합니다.
+To run during development: `npm install`, then run this folder with Electron 33.
 
-## 프로토콜
+## Protocol
 
-공식 Windows 드라이버(`DeviceDriver.exe` 1.0.0.5)를 정적 분석해서 알아냈습니다.
+Found by static analysis of the official Windows driver (`DeviceDriver.exe` 1.0.0.5).
 
-| 인터페이스 | Usage page | 용도 |
+| Interface | Usage page | Purpose |
 |---|---|---|
-| 3 | `0xff13` | 명령. 64바이트 feature report (report ID 0) |
-| 2 | `0xff68` | 화면 데이터. 4096바이트 output report (report ID 0) |
+| 3 | `0xff13` | Commands. 64-byte feature report (report ID 0) |
+| 2 | `0xff68` | Screen data. 4096-byte output report (report ID 0) |
 
-명령마다 feature report를 보내고 35ms 기다린 뒤 응답을 읽습니다. 키보드는 보낸 명령을 그대로 돌려줍니다.
-모든 설정은 `04 18`(시작) → `04 XX`(명령, 8번 바이트 = 데이터 패킷 수) → 데이터 패킷 → `04 02`(저장) 순서입니다.
+Each command sends a feature report, waits 35 ms, then reads the reply. The keyboard echoes the command back.
+Every setting follows the order `04 18` (start) → `04 XX` (command, byte 8 = number of data packets) → data packets → `04 02` (save).
 
-**조명** (`04 13`, 이후 `04 F0`)
+**Lighting** (`04 13`, then `04 F0`)
 
-| 바이트 | 값 |
+| Byte | Value |
 |---|---|
-| 0 | 모드 (0 = 끄기, 1 = 고정 색) |
+| 0 | Mode (0 = off, 1 = static color) |
 | 1–3 | R, G, B |
-| 8 | 무지개색 (0/1) |
-| 9 | 밝기 (0–5) |
-| 10 | 속도 (0–5) |
-| 11 | 방향 |
+| 8 | Rainbow (0/1) |
+| 9 | Brightness (0–5) |
+| 10 | Speed (0–5) |
+| 11 | Direction |
 | 14–15 | `AA 55` |
 
-**시간 동기화** (`04 28`): `[1]=1 [2]=0x5A [3]=년%2000 [4]=월 [5]=일 [6]=시 [7]=분 [8]=초 [10]=요일(일=0) [62..63]=AA 55`. 보내면 화면이 시계로 바뀝니다.
+**Time sync** (`04 28`): `[1]=1 [2]=0x5A [3]=year%2000 [4]=month [5]=day [6]=hour [7]=minute [8]=second [10]=weekday(Sun=0) [62..63]=AA 55`. Sending it switches the screen to the clock.
 
-**화면 업로드** (`04 72`): `[2]=슬롯(1)`, `[8..9]=4096바이트 덩어리 수 (리틀엔디안)`. 이어서 `0xff68` 인터페이스로 덩어리를 하나씩 쓰고, 덩어리마다 키보드의 응답을 읽습니다. 데이터 구조는 다음과 같습니다.
+**Screen upload** (`04 72`): `[2]=slot(1)`, `[8..9]=number of 4096-byte chunks (little-endian)`. Then write the chunks one at a time to the `0xff68` interface, reading the keyboard's reply after each chunk. The data layout:
 
-- 256바이트 헤더: `[0]=프레임 수`, `[1+i]=i번째 프레임 시간 (2ms 단위)`, 나머지는 `0xFF`
-- 프레임마다 240×135 RGB565 리틀엔디안, 위에서 아래로
-- 전체를 `0xFF`로 채워 4096의 배수로 맞춤
+- 256-byte header: `[0]=frame count`, `[1+i]=duration of frame i (in 2 ms units)`, the rest `0xFF`
+- Each frame is 240×135 RGB565 little-endian, top to bottom
+- The whole thing is padded with `0xFF` to a multiple of 4096
 
-## 면책
+## Disclaimer
 
-Archon/PREFLOW와 관련 없는 비공식 프로젝트입니다. 펌웨어 업데이트 기능은 없습니다. 사용에 따른 책임은 사용자에게 있습니다.
+Unofficial project, not affiliated with Archon/PREFLOW. There is no firmware update feature. Use at your own risk.
