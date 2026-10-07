@@ -1,0 +1,9 @@
+{
+  "name": "ak74-mac",
+  "version": "1.0.0",
+  "main": "main.js",
+  "private": true,
+  "dependencies": {
+    "node-hid": "^3.2.0"
+  }
+}
