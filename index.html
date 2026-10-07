@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' blob: data:">
@@ -9,56 +9,68 @@
   @media (prefers-color-scheme: dark) { :root { --bg: #1c1c1e; --card: #2c2c2e; --line: #3a3a3c; --muted: #98989d; } }
   * { box-sizing: border-box; }
   body { margin: 0; padding: 20px; font: 14px -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .top select { width: auto; }
   h1 { font-size: 20px; margin: 0 0 4px; }
   #status { color: var(--muted); margin-bottom: 16px; }
   section { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
   h2 { font-size: 15px; margin: 0 0 12px; }
-  label { display: grid; grid-template-columns: 90px 1fr 28px; align-items: center; gap: 8px; margin-bottom: 10px; }
+  label { display: grid; grid-template-columns: 110px 1fr 28px; align-items: center; gap: 8px; margin-bottom: 10px; }
   label.check { display: flex; }
   select, input[type=range] { width: 100%; }
   output { text-align: right; color: var(--muted); }
   button { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); cursor: pointer; }
   button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   button:disabled { opacity: .5; cursor: default; }
-  .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  #fileName { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   canvas { width: 100%; max-width: 480px; aspect-ratio: 240 / 135; background: #000; border-radius: 6px; display: block; margin: 10px 0; }
   progress { width: 100%; }
   .hint { color: var(--muted); font-size: 12px; margin: 8px 0 0; }
 </style>
 </head>
 <body>
-<h1>Archon AK74</h1>
-<div id="status">연결 확인 중…</div>
+<div class="top">
+  <h1>Archon AK74</h1>
+  <select id="lang" aria-label="Language">
+    <option value="en">English</option>
+    <option value="ko">한국어</option>
+    <option value="ja">日本語</option>
+    <option value="zh">中文（简体）</option>
+    <option value="es">Español</option>
+  </select>
+</div>
+<div id="status"></div>
 
 <section>
-  <h2>조명</h2>
-  <label>모드 <select id="mode"></select><span></span></label>
-  <label>색상 <input type="color" id="color" value="#ff0000"><span></span></label>
-  <label class="check"><input type="checkbox" id="colorful"> 무지개색 (색상 대신)</label>
-  <label>밝기 <input type="range" id="brightness" min="0" max="5" value="5"><output></output></label>
-  <label>속도 <input type="range" id="speed" min="0" max="5" value="3"><output></output></label>
-  <label>방향 <select id="direction"><option value="0">방향 1</option><option value="1">방향 2</option><option value="2">방향 3</option><option value="3">방향 4</option></select><span></span></label>
-  <button class="primary" id="applyLight">조명 적용</button>
+  <h2 data-t="lighting"></h2>
+  <label><span data-t="mode"></span><select id="mode"></select><span></span></label>
+  <label><span data-t="color"></span><input type="color" id="color" value="#ff0000"><span></span></label>
+  <label class="check"><input type="checkbox" id="colorful"> <span data-t="rainbow"></span></label>
+  <label><span data-t="brightness"></span><input type="range" id="brightness" min="0" max="5" value="5"><output></output></label>
+  <label><span data-t="speed"></span><input type="range" id="speed" min="0" max="5" value="3"><output></output></label>
+  <label><span data-t="direction"></span><select id="direction"></select><span></span></label>
+  <button class="primary" id="applyLight" data-t="applyLight"></button>
 </section>
 
 <section>
-  <h2>화면</h2>
+  <h2 data-t="screen"></h2>
   <div class="row">
-    <button id="showClock">🕐 시계 보기 (시간 동기화)</button>
-    <button id="showGif">🖼 GIF 보기</button>
+    <button id="showClock" data-t="showClock"></button>
+    <button id="showGif" data-t="showGif"></button>
   </div>
-  <p class="hint">GIF 보기는 마지막으로 올린 GIF를 다시 업로드합니다. 키보드에 화면 전환 명령이 없어서예요.</p>
+  <p class="hint" data-t="showGifHint"></p>
   <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
-  <input type="file" id="file" accept="image/gif,image/png,image/jpeg,image/webp">
-  <label class="check"><input type="checkbox" id="crop"> 화면 꽉 채우기 (넘치는 부분 잘림)</label>
-  <label>재생 속도 <select id="gifSpeed">
-    <option value="0.25">0.25배 (느리게)</option><option value="0.5">0.5배</option><option value="0.75">0.75배</option>
-    <option value="1" selected>1배 (원본)</option>
-    <option value="1.5">1.5배</option><option value="2">2배</option><option value="3">3배</option><option value="4">4배 (빠르게)</option>
-  </select><span></span></label>
+  <div class="row">
+    <button id="pick" data-t="chooseImage"></button>
+    <span id="fileName"></span>
+  </div>
+  <input type="file" id="file" accept="image/gif,image/png,image/jpeg,image/webp" hidden>
+  <label class="check" style="margin-top:10px"><input type="checkbox" id="crop"> <span data-t="crop"></span></label>
+  <label><span data-t="playback"></span><select id="gifSpeed"></select><span></span></label>
   <canvas id="preview" width="240" height="135"></canvas>
   <div id="frameInfo" class="hint"></div>
-  <button class="primary" id="upload" disabled>GIF 업로드</button>
+  <button class="primary" id="upload" data-t="upload" disabled></button>
   <progress id="progress" max="1" value="0" hidden></progress>
 </section>
 
@@ -66,10 +78,172 @@
 const W = 240, H = 135, HEAD = 256, MAX_FRAMES = 141;
 const $ = (id) => document.getElementById(id);
 
-const modes = ['끄기', '고정 색'];
-for (let i = 2; i <= 17; i++) modes.push(`효과 ${i}`);
-modes.forEach((name, i) => $('mode').add(new Option(`${i}. ${name}`, i)));
+const STRINGS = {
+  en: {
+    checking: 'Checking connection…',
+    connected: '✅ Keyboard connected',
+    notConnected: '⚠️ Keyboard not found (connect it with a USB cable)',
+    lighting: 'Lighting', mode: 'Mode', color: 'Color', rainbow: 'Rainbow (instead of color)',
+    brightness: 'Brightness', speed: 'Speed', direction: 'Direction', dir: (n) => `Direction ${n}`,
+    modeOff: 'Off', modeStatic: 'Static color', modeEffect: (n) => `Effect ${n}`,
+    applyLight: 'Apply lighting',
+    screen: 'Screen', showClock: '🕐 Show clock (sync time)', showGif: '🖼 Show GIF',
+    showGifHint: 'Show GIF re-uploads the last GIF you sent. The keyboard has no command to switch screens.',
+    chooseImage: 'Choose image…', noFile: 'No file selected',
+    crop: 'Fill the screen (crop overflow)', playback: 'Playback speed',
+    speedOpt: (x) => (x === 1 ? '1× (original)' : x < 1 ? `${x}× (slower)` : `${x}× (faster)`),
+    frames: (n) => `${n} frames`,
+    framesCut: (total, n) => `Only the first ${n} of ${total} frames will be uploaded (keyboard limit: ${MAX_FRAMES}).`,
+    upload: 'Upload GIF',
+    opLight: 'Lighting update', opClock: 'Time sync', opShowGif: 'Show GIF', opUpload: 'GIF upload',
+    busy: (op) => `${op} in progress…`, done: (op) => `✅ ${op} complete`, failed: (op, msg) => `❌ ${op} failed: ${msg}`,
+    clamped: 'Some frames were limited to the keyboard range of 2–510 ms.',
+    badImage: (msg) => `❌ Can't read this image: ${msg}`,
+    KB_NOT_FOUND: 'Keyboard not found. Check the USB cable.',
+    NO_SAVED_GIF: 'Upload a GIF first.',
+  },
+  ko: {
+    checking: '연결 확인 중…',
+    connected: '✅ 키보드 연결됨',
+    notConnected: '⚠️ 키보드를 찾을 수 없습니다 (USB로 연결해 주세요)',
+    lighting: '조명', mode: '모드', color: '색상', rainbow: '무지개색 (색상 대신)',
+    brightness: '밝기', speed: '속도', direction: '방향', dir: (n) => `방향 ${n}`,
+    modeOff: '끄기', modeStatic: '고정 색', modeEffect: (n) => `효과 ${n}`,
+    applyLight: '조명 적용',
+    screen: '화면', showClock: '🕐 시계 보기 (시간 동기화)', showGif: '🖼 GIF 보기',
+    showGifHint: 'GIF 보기는 마지막으로 올린 GIF를 다시 업로드합니다. 키보드에 화면 전환 명령이 없어서예요.',
+    chooseImage: '이미지 선택…', noFile: '선택한 파일 없음',
+    crop: '화면 꽉 채우기 (넘치는 부분 잘림)', playback: '재생 속도',
+    speedOpt: (x) => (x === 1 ? '1배 (원본)' : x < 1 ? `${x}배 (느리게)` : `${x}배 (빠르게)`),
+    frames: (n) => `${n}프레임`,
+    framesCut: (total, n) => `${total}프레임 중 앞의 ${n}프레임만 올라갑니다 (키보드 최대 ${MAX_FRAMES}프레임).`,
+    upload: 'GIF 업로드',
+    opLight: '조명 적용', opClock: '시간 동기화', opShowGif: 'GIF 표시', opUpload: 'GIF 업로드',
+    busy: (op) => `${op} 중…`, done: (op) => `✅ ${op} 완료`, failed: (op, msg) => `❌ ${op} 실패: ${msg}`,
+    clamped: '일부 프레임은 키보드 한계인 2~510ms로 맞춰졌습니다.',
+    badImage: (msg) => `❌ 이미지를 읽을 수 없습니다: ${msg}`,
+    KB_NOT_FOUND: '키보드를 찾을 수 없습니다. USB 케이블을 확인해 주세요.',
+    NO_SAVED_GIF: '먼저 GIF를 한 번 업로드해 주세요.',
+  },
+  ja: {
+    checking: '接続を確認しています…',
+    connected: '✅ キーボード接続済み',
+    notConnected: '⚠️ キーボードが見つかりません（USBケーブルで接続してください）',
+    lighting: 'ライティング', mode: 'モード', color: '色', rainbow: 'レインボー（色の代わりに）',
+    brightness: '明るさ', speed: '速度', direction: '方向', dir: (n) => `方向 ${n}`,
+    modeOff: 'オフ', modeStatic: '単色', modeEffect: (n) => `エフェクト ${n}`,
+    applyLight: 'ライティングを適用',
+    screen: '画面', showClock: '🕐 時計を表示（時刻を同期）', showGif: '🖼 GIFを表示',
+    showGifHint: '「GIFを表示」は最後に送ったGIFを再アップロードします。キーボードに画面切り替えのコマンドがないためです。',
+    chooseImage: '画像を選択…', noFile: 'ファイルが選択されていません',
+    crop: '画面いっぱいに表示（はみ出す部分はカット）', playback: '再生速度',
+    speedOpt: (x) => (x === 1 ? '1倍（元の速度）' : x < 1 ? `${x}倍（遅く）` : `${x}倍（速く）`),
+    frames: (n) => `${n}フレーム`,
+    framesCut: (total, n) => `${total}フレームのうち最初の${n}フレームのみアップロードされます（キーボードの上限：${MAX_FRAMES}）。`,
+    upload: 'GIFをアップロード',
+    opLight: 'ライティングの適用', opClock: '時刻の同期', opShowGif: 'GIFの表示', opUpload: 'GIFのアップロード',
+    busy: (op) => `${op}中…`, done: (op) => `✅ ${op}が完了しました`, failed: (op, msg) => `❌ ${op}に失敗しました：${msg}`,
+    clamped: '一部のフレームはキーボードの範囲（2〜510ms）に調整されました。',
+    badImage: (msg) => `❌ 画像を読み込めません：${msg}`,
+    KB_NOT_FOUND: 'キーボードが見つかりません。USBケーブルを確認してください。',
+    NO_SAVED_GIF: '先にGIFを一度アップロードしてください。',
+  },
+  zh: {
+    checking: '正在检查连接…',
+    connected: '✅ 键盘已连接',
+    notConnected: '⚠️ 未找到键盘（请用 USB 线连接）',
+    lighting: '灯光', mode: '模式', color: '颜色', rainbow: '彩虹色（代替颜色）',
+    brightness: '亮度', speed: '速度', direction: '方向', dir: (n) => `方向 ${n}`,
+    modeOff: '关闭', modeStatic: '常亮单色', modeEffect: (n) => `效果 ${n}`,
+    applyLight: '应用灯光',
+    screen: '屏幕', showClock: '🕐 显示时钟（同步时间）', showGif: '🖼 显示 GIF',
+    showGifHint: '“显示 GIF”会重新上传你最后发送的 GIF，因为键盘没有切换屏幕的命令。',
+    chooseImage: '选择图片…', noFile: '未选择文件',
+    crop: '填满屏幕（裁掉超出部分）', playback: '播放速度',
+    speedOpt: (x) => (x === 1 ? '1 倍（原速）' : x < 1 ? `${x} 倍（更慢）` : `${x} 倍（更快）`),
+    frames: (n) => `${n} 帧`,
+    framesCut: (total, n) => `共 ${total} 帧，只会上传前 ${n} 帧（键盘上限：${MAX_FRAMES} 帧）。`,
+    upload: '上传 GIF',
+    opLight: '应用灯光', opClock: '同步时间', opShowGif: '显示 GIF', opUpload: '上传 GIF',
+    busy: (op) => `正在${op}…`, done: (op) => `✅ ${op}完成`, failed: (op, msg) => `❌ ${op}失败：${msg}`,
+    clamped: '部分帧已调整到键盘支持的 2–510 毫秒范围。',
+    badImage: (msg) => `❌ 无法读取此图片：${msg}`,
+    KB_NOT_FOUND: '未找到键盘，请检查 USB 线。',
+    NO_SAVED_GIF: '请先上传一次 GIF。',
+  },
+  es: {
+    checking: 'Comprobando la conexión…',
+    connected: '✅ Teclado conectado',
+    notConnected: '⚠️ No se encuentra el teclado (conéctalo con un cable USB)',
+    lighting: 'Iluminación', mode: 'Modo', color: 'Color', rainbow: 'Arcoíris (en lugar del color)',
+    brightness: 'Brillo', speed: 'Velocidad', direction: 'Dirección', dir: (n) => `Dirección ${n}`,
+    modeOff: 'Apagado', modeStatic: 'Color fijo', modeEffect: (n) => `Efecto ${n}`,
+    applyLight: 'Aplicar iluminación',
+    screen: 'Pantalla', showClock: '🕐 Mostrar reloj (sincronizar hora)', showGif: '🖼 Mostrar GIF',
+    showGifHint: '«Mostrar GIF» vuelve a subir el último GIF que enviaste, porque el teclado no tiene un comando para cambiar de pantalla.',
+    chooseImage: 'Elegir imagen…', noFile: 'Ningún archivo seleccionado',
+    crop: 'Llenar la pantalla (recorta lo que sobra)', playback: 'Velocidad de reproducción',
+    speedOpt: (x) => (x === 1 ? '1× (original)' : x < 1 ? `${x}× (más lento)` : `${x}× (más rápido)`),
+    frames: (n) => `${n} fotogramas`,
+    framesCut: (total, n) => `Solo se subirán los primeros ${n} de ${total} fotogramas (límite del teclado: ${MAX_FRAMES}).`,
+    upload: 'Subir GIF',
+    opLight: 'Aplicar iluminación', opClock: 'Sincronizar hora', opShowGif: 'Mostrar GIF', opUpload: 'Subir GIF',
+    busy: (op) => `${op}…`, done: (op) => `✅ ${op}: listo`, failed: (op, msg) => `❌ ${op}: error (${msg})`,
+    clamped: 'Algunos fotogramas se ajustaron al rango del teclado (2–510 ms).',
+    badImage: (msg) => `❌ No se puede leer esta imagen: ${msg}`,
+    KB_NOT_FOUND: 'No se encuentra el teclado. Revisa el cable USB.',
+    NO_SAVED_GIF: 'Primero sube un GIF.',
+  },
+};
+
+function pickLang() {
+  try {
+    const saved = localStorage.getItem('lang');
+    if (STRINGS[saved]) return saved;
+  } catch {}
+  const sys = navigator.language.slice(0, 2);
+  return STRINGS[sys] ? sys : 'en';
+}
+let lang = pickLang();
+let t = STRINGS[lang];
+
+// Status and frame info are stored as functions of the string table so they re-render on language change.
+let statusFn = (s) => s.checking;
+let frameInfoFn = () => '';
+function setStatus(fn) { statusFn = fn; $('status').textContent = fn(t); }
+function setFrameInfo(fn) { frameInfoFn = fn; $('frameInfo').textContent = fn(t); }
+
+function fillSelect(sel, items) {
+  const value = sel.value;
+  sel.replaceChildren(...items.map(([v, text]) => new Option(text, v)));
+  if (value !== '') sel.value = value;
+}
+
+const SPEEDS = [0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4];
+
+function render() {
+  document.documentElement.lang = lang;
+  $('lang').value = lang;
+  document.querySelectorAll('[data-t]').forEach((el) => (el.textContent = t[el.dataset.t]));
+  fillSelect($('mode'), Array.from({ length: 18 }, (_, i) =>
+    [i, `${i}. ${i === 0 ? t.modeOff : i === 1 ? t.modeStatic : t.modeEffect(i)}`]));
+  fillSelect($('direction'), [0, 1, 2, 3].map((i) => [i, t.dir(i + 1)]));
+  fillSelect($('gifSpeed'), SPEEDS.map((x) => [x, t.speedOpt(x)]));
+  $('fileName').textContent = $('file').files[0]?.name ?? t.noFile;
+  $('status').textContent = statusFn(t);
+  $('frameInfo').textContent = frameInfoFn(t);
+}
+
+render();
 $('mode').value = 1;
+$('gifSpeed').value = 1;
+
+$('lang').onchange = () => {
+  lang = $('lang').value;
+  t = STRINGS[lang];
+  try { localStorage.setItem('lang', lang); } catch {}
+  render();
+};
 
 document.querySelectorAll('input[type=range]').forEach((r) => {
   const out = r.nextElementSibling;
@@ -78,32 +252,41 @@ document.querySelectorAll('input[type=range]').forEach((r) => {
   sync();
 });
 
-function setStatus(text) { $('status').textContent = text; }
+// main.js throws error codes; Electron wraps them as "Error invoking remote method …: Error: CODE".
+function errorText(e) {
+  const code = e.message.match(/(KB_NOT_FOUND|NO_SAVED_GIF)/)?.[1];
+  return code ? t[code] : e.message;
+}
 
+let busy = false;
 async function refreshStatus() {
-  setStatus((await kb.isConnected()) ? '✅ 키보드 연결됨' : '⚠️ 키보드를 찾을 수 없습니다 (USB로 연결해 주세요)');
+  if (busy) return;
+  const ok = await kb.isConnected();
+  if (!busy) setStatus((s) => (ok ? s.connected : s.notConnected));
 }
 refreshStatus();
 setInterval(refreshStatus, 3000);
 
 // Disable buttons while one device operation runs.
-async function run(label, fn) {
+async function run(opKey, fn) {
   const buttons = document.querySelectorAll('button');
   buttons.forEach((b) => (b.disabled = true));
-  setStatus(`${label} 중…`);
+  busy = true;
+  setStatus((s) => s.busy(s[opKey]));
   try {
-    await fn();
-    setStatus(`✅ ${label} 완료`);
+    const note = await fn();
+    setStatus((s) => s.done(s[opKey]) + (note ? ` ${s[note]}` : ''));
   } catch (e) {
-    setStatus(`❌ ${label} 실패: ${e.message}`);
+    setStatus((s) => s.failed(s[opKey], errorText(e)));
   } finally {
+    busy = false;
     buttons.forEach((b) => (b.disabled = false));
     $('upload').disabled = !screenData;
     $('progress').hidden = true;
   }
 }
 
-$('applyLight').onclick = () => run('조명 적용', () => {
+$('applyLight').onclick = () => run('opLight', () => {
   const hex = $('color').value;
   return kb.setLight({
     mode: +$('mode').value,
@@ -117,10 +300,10 @@ $('applyLight').onclick = () => run('조명 적용', () => {
   });
 });
 
-$('showClock').onclick = () => run('시간 동기화', () => kb.syncTime());
+$('showClock').onclick = () => run('opClock', () => kb.syncTime());
 
 kb.onProgress((p) => { $('progress').hidden = false; $('progress').value = p; });
-$('showGif').onclick = () => run('GIF 표시', () => kb.showGif());
+$('showGif').onclick = () => run('opShowGif', () => kb.showGif());
 
 // ---- image -> keyboard screen buffer ----
 let screenData = null, screenFrameMs = [];
@@ -179,27 +362,27 @@ function applySpeed(data, frameMs, speed) {
 async function loadFile() {
   const file = $('file').files[0];
   if (!file) return;
+  $('fileName').textContent = file.name;
   try {
     const { data, total, count, frameMs } = await prepareScreen(file, $('crop').checked);
     screenData = data;
     screenFrameMs = frameMs;
-    $('frameInfo').textContent = total > count
-      ? `${total}프레임 중 앞의 ${count}프레임만 올라갑니다 (키보드 최대 ${MAX_FRAMES}프레임).`
-      : `${count}프레임`;
+    setFrameInfo((s) => (total > count ? s.framesCut(total, count) : s.frames(count)));
     $('upload').disabled = false;
   } catch (e) {
     screenData = null;
     $('upload').disabled = true;
-    setStatus(`❌ 이미지를 읽을 수 없습니다: ${e.message}`);
+    setStatus((s) => s.badImage(e.message));
   }
 }
+$('pick').onclick = () => $('file').click();
 $('file').onchange = loadFile;
 $('crop').onchange = loadFile;
 
-$('upload').onclick = () => run('GIF 업로드', async () => {
+$('upload').onclick = () => run('opUpload', async () => {
   const clamped = applySpeed(screenData, screenFrameMs, +$('gifSpeed').value);
   await kb.uploadScreen(screenData);
-  if (clamped) setTimeout(() => setStatus('✅ GIF 업로드 완료 (일부 프레임은 키보드 한계인 2~510ms로 맞춰졌습니다)'));
+  return clamped ? 'clamped' : null;
 });
 </script>
 </body>

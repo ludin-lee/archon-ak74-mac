@@ -12,6 +12,7 @@ Unofficial macOS app for the Archon AK74 keyboard (SONiX, `0c45:800a`): lighting
 - **조명**: 모드, 색상, 무지개색, 밝기, 속도, 방향
 - **화면**: GIF, PNG, JPG 업로드 (240×135, 최대 141프레임), 재생 속도 0.25~4배
 - **시계**: 현재 시간 동기화 + 시계 화면으로 전환
+- **언어**: English, 한국어, 日本語, 中文, Español (앱 오른쪽 위에서 선택)
 
 ## 설치
 

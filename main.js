@@ -14,7 +14,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 function findPath(usagePage) {
   const d = HID.devices(VID, PID).find((d) => d.usagePage === usagePage);
-  if (!d) throw new Error('키보드를 찾을 수 없습니다. USB 케이블로 연결했는지 확인해 주세요.');
+  if (!d) throw new Error('KB_NOT_FOUND');
   return d.path;
 }
 
@@ -109,7 +109,7 @@ ipcMain.handle('upload-screen', (e, data) =>
   }));
 ipcMain.handle('show-gif', (e) =>
   serial(() => {
-    if (!fs.existsSync(lastScreenFile())) throw new Error('먼저 GIF를 한 번 업로드해 주세요.');
+    if (!fs.existsSync(lastScreenFile())) throw new Error('NO_SAVED_GIF');
     return uploadScreen(fs.readFileSync(lastScreenFile()), (p) => e.sender.send('upload-progress', p));
   }));
 ipcMain.handle('is-connected', () => HID.devices(VID, PID).some((d) => d.usagePage === CMD_PAGE));
