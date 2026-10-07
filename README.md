@@ -1,10 +1,9 @@
 # Archon AK74 for Mac
 
-<p align="center">
-  <a href="https://buymeacoffee.com/ludin"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ludin-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy Me a Coffee"></a>
-  <br>
-  <sub>도움이 되셨다면 커피 한 잔 사주세요 ☕ · If this app helped you, consider buying me a coffee ☕</sub>
-</p>
+If you enjoy AK74 for Mac, a coffee keeps it going ☕<br>
+앱이 도움이 되셨다면 커피 한 잔으로 응원해 주세요 ☕
+
+<a href="https://buymeacoffee.com/ludin"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="45"></a>
 
 Archon AK74 키보드(`0c45:800a`)를 맥에서 설정하는 비공식 앱입니다.
 공식 드라이버는 Windows 전용이라, Windows 드라이버의 통신 방식을 분석해서 맥용으로 다시 만들었습니다.
