@@ -92,12 +92,13 @@ const STRINGS = {
     chooseImage: 'Choose image…', noFile: 'No file selected',
     crop: 'Fill the screen (crop overflow)', playback: 'Playback speed',
     speedOpt: (x) => (x === 1 ? '1× (original)' : x < 1 ? `${x}× (slower)` : `${x}× (faster)`),
-    frames: (n) => `${n} frames`,
-    framesCut: (total, n) => `Only the first ${n} of ${total} frames will be uploaded (keyboard limit: ${MAX_FRAMES}).`,
+    framesSent: (total, n) => (total === n ? `${n} frames` : `${total} frames → ${n} frames on the keyboard.`),
+    skipNote: 'Some frames are skipped to reach this speed (the keyboard shows about 20 frames per second at most).',
+    cutNote: `Only the beginning fits (keyboard limit: ${MAX_FRAMES} frames).`,
     upload: 'Upload GIF',
     opLight: 'Lighting update', opClock: 'Time sync', opShowGif: 'Show GIF', opUpload: 'GIF upload',
     busy: (op) => `${op} in progress…`, done: (op) => `✅ ${op} complete`, failed: (op, msg) => `❌ ${op} failed: ${msg}`,
-    clamped: 'Some frames were limited to the keyboard range of 2–510 ms.',
+    clamped: 'Some frames were capped at the keyboard maximum of 510 ms.',
     badImage: (msg) => `❌ Can't read this image: ${msg}`,
     KB_NOT_FOUND: 'Keyboard not found. Check the USB cable.',
     NO_SAVED_GIF: 'Upload a GIF first.',
@@ -115,12 +116,13 @@ const STRINGS = {
     chooseImage: '이미지 선택…', noFile: '선택한 파일 없음',
     crop: '화면 꽉 채우기 (넘치는 부분 잘림)', playback: '재생 속도',
     speedOpt: (x) => (x === 1 ? '1배 (원본)' : x < 1 ? `${x}배 (느리게)` : `${x}배 (빠르게)`),
-    frames: (n) => `${n}프레임`,
-    framesCut: (total, n) => `${total}프레임 중 앞의 ${n}프레임만 올라갑니다 (키보드 최대 ${MAX_FRAMES}프레임).`,
+    framesSent: (total, n) => (total === n ? `${n}프레임` : `${total}프레임 → 키보드에는 ${n}프레임.`),
+    skipNote: '이 속도를 내려고 일부 프레임을 건너뜁니다 (키보드는 초당 최대 약 20장).',
+    cutNote: `앞부분만 올라갑니다 (키보드 최대 ${MAX_FRAMES}프레임).`,
     upload: 'GIF 업로드',
     opLight: '조명 적용', opClock: '시간 동기화', opShowGif: 'GIF 표시', opUpload: 'GIF 업로드',
     busy: (op) => `${op} 중…`, done: (op) => `✅ ${op} 완료`, failed: (op, msg) => `❌ ${op} 실패: ${msg}`,
-    clamped: '일부 프레임은 키보드 한계인 2~510ms로 맞춰졌습니다.',
+    clamped: '일부 프레임은 키보드 최대치인 510ms로 맞춰졌습니다.',
     badImage: (msg) => `❌ 이미지를 읽을 수 없습니다: ${msg}`,
     KB_NOT_FOUND: '키보드를 찾을 수 없습니다. USB 케이블을 확인해 주세요.',
     NO_SAVED_GIF: '먼저 GIF를 한 번 업로드해 주세요.',
@@ -138,12 +140,13 @@ const STRINGS = {
     chooseImage: '画像を選択…', noFile: 'ファイルが選択されていません',
     crop: '画面いっぱいに表示（はみ出す部分はカット）', playback: '再生速度',
     speedOpt: (x) => (x === 1 ? '1倍（元の速度）' : x < 1 ? `${x}倍（遅く）` : `${x}倍（速く）`),
-    frames: (n) => `${n}フレーム`,
-    framesCut: (total, n) => `${total}フレームのうち最初の${n}フレームのみアップロードされます（キーボードの上限：${MAX_FRAMES}）。`,
+    framesSent: (total, n) => (total === n ? `${n}フレーム` : `${total}フレーム → キーボードには${n}フレーム。`),
+    skipNote: 'この速度にするため一部のフレームを省きます（キーボードの表示は最大で毎秒約20枚）。',
+    cutNote: `最初の部分のみアップロードされます（キーボードの上限：${MAX_FRAMES}フレーム）。`,
     upload: 'GIFをアップロード',
     opLight: 'ライティングの適用', opClock: '時刻の同期', opShowGif: 'GIFの表示', opUpload: 'GIFのアップロード',
     busy: (op) => `${op}中…`, done: (op) => `✅ ${op}が完了しました`, failed: (op, msg) => `❌ ${op}に失敗しました：${msg}`,
-    clamped: '一部のフレームはキーボードの範囲（2〜510ms）に調整されました。',
+    clamped: '一部のフレームはキーボードの上限（510ms）に調整されました。',
     badImage: (msg) => `❌ 画像を読み込めません：${msg}`,
     KB_NOT_FOUND: 'キーボードが見つかりません。USBケーブルを確認してください。',
     NO_SAVED_GIF: '先にGIFを一度アップロードしてください。',
@@ -161,12 +164,13 @@ const STRINGS = {
     chooseImage: '选择图片…', noFile: '未选择文件',
     crop: '填满屏幕（裁掉超出部分）', playback: '播放速度',
     speedOpt: (x) => (x === 1 ? '1 倍（原速）' : x < 1 ? `${x} 倍（更慢）` : `${x} 倍（更快）`),
-    frames: (n) => `${n} 帧`,
-    framesCut: (total, n) => `共 ${total} 帧，只会上传前 ${n} 帧（键盘上限：${MAX_FRAMES} 帧）。`,
+    framesSent: (total, n) => (total === n ? `${n} 帧` : `${total} 帧 → 键盘上 ${n} 帧。`),
+    skipNote: '为达到此速度会跳过部分帧（键盘每秒最多显示约 20 帧）。',
+    cutNote: `只会上传开头部分（键盘上限：${MAX_FRAMES} 帧）。`,
     upload: '上传 GIF',
     opLight: '应用灯光', opClock: '同步时间', opShowGif: '显示 GIF', opUpload: '上传 GIF',
     busy: (op) => `正在${op}…`, done: (op) => `✅ ${op}完成`, failed: (op, msg) => `❌ ${op}失败：${msg}`,
-    clamped: '部分帧已调整到键盘支持的 2–510 毫秒范围。',
+    clamped: '部分帧已调整为键盘上限 510 毫秒。',
     badImage: (msg) => `❌ 无法读取此图片：${msg}`,
     KB_NOT_FOUND: '未找到键盘，请检查 USB 线。',
     NO_SAVED_GIF: '请先上传一次 GIF。',
@@ -184,12 +188,13 @@ const STRINGS = {
     chooseImage: 'Elegir imagen…', noFile: 'Ningún archivo seleccionado',
     crop: 'Llenar la pantalla (recorta lo que sobra)', playback: 'Velocidad de reproducción',
     speedOpt: (x) => (x === 1 ? '1× (original)' : x < 1 ? `${x}× (más lento)` : `${x}× (más rápido)`),
-    frames: (n) => `${n} fotogramas`,
-    framesCut: (total, n) => `Solo se subirán los primeros ${n} de ${total} fotogramas (límite del teclado: ${MAX_FRAMES}).`,
+    framesSent: (total, n) => (total === n ? `${n} fotogramas` : `${total} fotogramas → ${n} en el teclado.`),
+    skipNote: 'Se omiten algunos fotogramas para lograr esta velocidad (el teclado muestra como máximo unos 20 por segundo).',
+    cutNote: `Solo cabe el principio (límite del teclado: ${MAX_FRAMES} fotogramas).`,
     upload: 'Subir GIF',
     opLight: 'Aplicar iluminación', opClock: 'Sincronizar hora', opShowGif: 'Mostrar GIF', opUpload: 'Subir GIF',
     busy: (op) => `${op}…`, done: (op) => `✅ ${op}: listo`, failed: (op, msg) => `❌ ${op}: error (${msg})`,
-    clamped: 'Algunos fotogramas se ajustaron al rango del teclado (2–510 ms).',
+    clamped: 'Algunos fotogramas se ajustaron al máximo del teclado (510 ms).',
     badImage: (msg) => `❌ No se puede leer esta imagen: ${msg}`,
     KB_NOT_FOUND: 'No se encuentra el teclado. Revisa el cable USB.',
     NO_SAVED_GIF: 'Primero sube un GIF.',
@@ -306,7 +311,10 @@ kb.onProgress((p) => { $('progress').hidden = false; $('progress').value = p; })
 $('showGif').onclick = () => run('opShowGif', () => kb.showGif());
 
 // ---- image -> keyboard screen buffer ----
-let screenData = null, screenFrameMs = [];
+// Measured on the keyboard: frames shorter than ~50ms still take ~50ms,
+// so faster playback is done by skipping frames.
+const MIN_FRAME_MS = 50, MAX_DECODE = 600;
+let screenData = null; // { frames: RGB565 per frame, frameMs, total }
 
 function drawFit(ctx, src, sw, sh, crop) {
   const scale = (crop ? Math.max : Math.min)(W / sw, H / sh);
@@ -316,47 +324,73 @@ function drawFit(ctx, src, sw, sh, crop) {
   ctx.drawImage(src, (W - w) / 2, (H - h) / 2, w, h);
 }
 
-// Layout from DeviceDriver.exe: 256-byte header (frame count, then per-frame delay in 2ms units),
-// then RGB565 little-endian frames, all padded with 0xFF to a multiple of 4096.
 async function prepareScreen(blob, crop) {
   const decoder = new ImageDecoder({ data: await blob.arrayBuffer(), type: blob.type });
   await decoder.tracks.ready;
   const total = decoder.tracks.selectedTrack.frameCount;
-  const count = Math.min(total, MAX_FRAMES);
+  const count = Math.min(total, MAX_DECODE);
 
   const canvas = new OffscreenCanvas(W, H);
   const ctx = canvas.getContext('2d');
-  const size = HEAD + W * H * 2 * count;
-  const data = new Uint8Array(Math.ceil(size / 4096) * 4096).fill(0xff);
-  data[0] = count;
-  const frameMs = [];
+  const frames = [], frameMs = [];
   for (let i = 0; i < count; i++) {
     const { image } = await decoder.decode({ frameIndex: i });
-    frameMs.push(image.duration ? image.duration / 1000 : 100);
+    const ms = (image.duration ?? 0) / 1000;
+    frameMs.push(ms > 10 ? ms : 100); // browsers also play delays of 10ms or less at 100ms
     drawFit(ctx, image, image.displayWidth, image.displayHeight, crop);
     image.close();
     const px = ctx.getImageData(0, 0, W, H).data;
-    let o = HEAD + i * W * H * 2;
-    for (let p = 0; p < px.length; p += 4) {
+    const f = new Uint8Array(W * H * 2);
+    for (let p = 0, o = 0; p < px.length; p += 4) {
       const v = ((px[p] & 0xf8) << 8) | ((px[p + 1] & 0xfc) << 3) | (px[p + 2] >> 3);
-      data[o++] = v & 0xff;
-      data[o++] = v >> 8;
+      f[o++] = v & 0xff;
+      f[o++] = v >> 8;
     }
+    frames.push(f);
     if (i === 0) $('preview').getContext('2d').drawImage(canvas, 0, 0);
   }
   decoder.close();
-  return { data, total, count, frameMs };
+  return { frames, frameMs, total };
 }
 
-// Frame delays live in the header (2ms units, 1-255), so speed is applied right before upload.
-function applySpeed(data, frameMs, speed) {
-  let clamped = false;
-  frameMs.forEach((ms, i) => {
-    const units = Math.round(ms / speed / 2);
-    clamped ||= units < 1 || units > 255;
-    data[1 + i] = Math.max(1, Math.min(255, units));
+// Which source frames to send, and for how long, at the given speed.
+// A frame shorter than MIN_FRAME_MS absorbs the following frames' time instead of showing them.
+function planFrames({ frameMs, total }, speed) {
+  const plan = [];
+  frameMs.forEach((ms, index) => {
+    const last = plan[plan.length - 1];
+    if (last && last.ms < MIN_FRAME_MS) last.ms += ms / speed;
+    else plan.push({ index, ms: ms / speed });
   });
-  return clamped;
+  return {
+    plan: plan.slice(0, MAX_FRAMES),
+    skipped: plan.length < frameMs.length,
+    cut: plan.length > MAX_FRAMES || frameMs.length < total,
+  };
+}
+
+// Layout from DeviceDriver.exe: 256-byte header (frame count, then per-frame delay in 2ms units),
+// then RGB565 little-endian frames, all padded with 0xFF to a multiple of 4096.
+function buildScreen(screen, speed) {
+  const { plan } = planFrames(screen, speed);
+  const data = new Uint8Array(Math.ceil((HEAD + W * H * 2 * plan.length) / 4096) * 4096).fill(0xff);
+  data[0] = plan.length;
+  let clamped = false;
+  plan.forEach(({ index, ms }, i) => {
+    const units = Math.round(ms / 2);
+    clamped ||= units > 255;
+    data[1 + i] = Math.max(1, Math.min(255, units));
+    data.set(screen.frames[index], HEAD + i * W * H * 2);
+  });
+  return { data, clamped };
+}
+
+function showFrameInfo() {
+  if (!screenData) return;
+  const { plan, skipped, cut } = planFrames(screenData, +$('gifSpeed').value);
+  const total = screenData.total;
+  setFrameInfo((s) => [s.framesSent(total, plan.length), skipped && s.skipNote, cut && s.cutNote]
+    .filter(Boolean).join(' '));
 }
 
 async function loadFile() {
@@ -364,10 +398,8 @@ async function loadFile() {
   if (!file) return;
   $('fileName').textContent = file.name;
   try {
-    const { data, total, count, frameMs } = await prepareScreen(file, $('crop').checked);
-    screenData = data;
-    screenFrameMs = frameMs;
-    setFrameInfo((s) => (total > count ? s.framesCut(total, count) : s.frames(count)));
+    screenData = await prepareScreen(file, $('crop').checked);
+    showFrameInfo();
     $('upload').disabled = false;
   } catch (e) {
     screenData = null;
@@ -378,10 +410,11 @@ async function loadFile() {
 $('pick').onclick = () => $('file').click();
 $('file').onchange = loadFile;
 $('crop').onchange = loadFile;
+$('gifSpeed').onchange = showFrameInfo;
 
 $('upload').onclick = () => run('opUpload', async () => {
-  const clamped = applySpeed(screenData, screenFrameMs, +$('gifSpeed').value);
-  await kb.uploadScreen(screenData);
+  const { data, clamped } = buildScreen(screenData, +$('gifSpeed').value);
+  await kb.uploadScreen(data);
   return clamped ? 'clamped' : null;
 });
 </script>
