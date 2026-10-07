@@ -51,6 +51,11 @@
   <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
   <input type="file" id="file" accept="image/gif,image/png,image/jpeg,image/webp">
   <label class="check"><input type="checkbox" id="crop"> 화면 꽉 채우기 (넘치는 부분 잘림)</label>
+  <label>재생 속도 <select id="gifSpeed">
+    <option value="0.25">0.25배 (느리게)</option><option value="0.5">0.5배</option><option value="0.75">0.75배</option>
+    <option value="1" selected>1배 (원본)</option>
+    <option value="1.5">1.5배</option><option value="2">2배</option><option value="3">3배</option><option value="4">4배 (빠르게)</option>
+  </select><span></span></label>
   <canvas id="preview" width="240" height="135"></canvas>
   <div id="frameInfo" class="hint"></div>
   <button class="primary" id="upload" disabled>GIF 업로드</button>
@@ -118,7 +123,7 @@ kb.onProgress((p) => { $('progress').hidden = false; $('progress').value = p; })
 $('showGif').onclick = () => run('GIF 표시', () => kb.showGif());
 
 // ---- image -> keyboard screen buffer ----
-let screenData = null;
+let screenData = null, screenFrameMs = [];
 
 function drawFit(ctx, src, sw, sh, crop) {
   const scale = (crop ? Math.max : Math.min)(W / sw, H / sh);
@@ -141,10 +146,10 @@ async function prepareScreen(blob, crop) {
   const size = HEAD + W * H * 2 * count;
   const data = new Uint8Array(Math.ceil(size / 4096) * 4096).fill(0xff);
   data[0] = count;
+  const frameMs = [];
   for (let i = 0; i < count; i++) {
     const { image } = await decoder.decode({ frameIndex: i });
-    const ms = image.duration ? image.duration / 1000 : 100;
-    data[1 + i] = Math.max(1, Math.min(255, Math.round(ms / 2)));
+    frameMs.push(image.duration ? image.duration / 1000 : 100);
     drawFit(ctx, image, image.displayWidth, image.displayHeight, crop);
     image.close();
     const px = ctx.getImageData(0, 0, W, H).data;
@@ -157,15 +162,27 @@ async function prepareScreen(blob, crop) {
     if (i === 0) $('preview').getContext('2d').drawImage(canvas, 0, 0);
   }
   decoder.close();
-  return { data, total, count };
+  return { data, total, count, frameMs };
+}
+
+// Frame delays live in the header (2ms units, 1-255), so speed is applied right before upload.
+function applySpeed(data, frameMs, speed) {
+  let clamped = false;
+  frameMs.forEach((ms, i) => {
+    const units = Math.round(ms / speed / 2);
+    clamped ||= units < 1 || units > 255;
+    data[1 + i] = Math.max(1, Math.min(255, units));
+  });
+  return clamped;
 }
 
 async function loadFile() {
   const file = $('file').files[0];
   if (!file) return;
   try {
-    const { data, total, count } = await prepareScreen(file, $('crop').checked);
+    const { data, total, count, frameMs } = await prepareScreen(file, $('crop').checked);
     screenData = data;
+    screenFrameMs = frameMs;
     $('frameInfo').textContent = total > count
       ? `${total}프레임 중 앞의 ${count}프레임만 올라갑니다 (키보드 최대 ${MAX_FRAMES}프레임).`
       : `${count}프레임`;
@@ -179,7 +196,11 @@ async function loadFile() {
 $('file').onchange = loadFile;
 $('crop').onchange = loadFile;
 
-$('upload').onclick = () => run('GIF 업로드', () => kb.uploadScreen(screenData));
+$('upload').onclick = () => run('GIF 업로드', async () => {
+  const clamped = applySpeed(screenData, screenFrameMs, +$('gifSpeed').value);
+  await kb.uploadScreen(screenData);
+  if (clamped) setTimeout(() => setStatus('✅ GIF 업로드 완료 (일부 프레임은 키보드 한계인 2~510ms로 맞춰졌습니다)'));
+});
 </script>
 </body>
 </html>
