@@ -15,7 +15,7 @@ Unofficial macOS app for the Archon AK74 keyboard (SONiX, `0c45:800a`): lighting
 
 ## 설치
 
-1. [Releases](../../releases)에서 `Archon AK74 (Mac).dmg`를 받습니다.
+1. [Releases](../../releases)에서 `Archon.AK74.Mac.dmg`를 받습니다.
 2. DMG를 열고 앱을 Applications 폴더로 드래그합니다.
 3. 처음 실행할 때 **우클릭 → 열기**로 실행합니다. 정식 개발자 서명이 없어서 경고가 뜹니다.
 
